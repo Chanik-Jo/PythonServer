@@ -6,7 +6,8 @@ serverSock.bind(('', 8080))
 serverSock.listen(1)
 
 
-
+def utf8len(s):#utf-8 형태의 바이트 갯수를 반환합니다.
+    return len(s.encode('utf-8'))
 
 if __name__=="__main__":
     print("server program has been started.")
@@ -15,9 +16,13 @@ if __name__=="__main__":
     while (True):
 
         #여기는 서버  입니다.
+
+
         connectionSock, addr = serverSock.accept()
         print(str(addr),'에서 접속이 확인되었습니다.')
 
+
+        #수신파트
         dataByteSize=0
         data=""
         recvLoop = True
@@ -37,8 +42,19 @@ if __name__=="__main__":
         data = connectionSock.recv(int(dataByteSize))
         data =data.decode('utf-8')
 
-        #data = connectionSock.recv(2)
+
+
+
+
         print('받은 데이터 : ', data)
 
-        connectionSock.send('I am a server.'.encode('utf-8'))
+
+
+        #여기까지 수신 끝.
+
+        #송신.
+        sendMsg = 'I am a server.'
+        sendMsgLen = utf8len(sendMsg)
+
+        connectionSock.send(sendMsgLen.encode('utf-8'))
         print('메시지를 보냈습니다.')
