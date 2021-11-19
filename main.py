@@ -56,5 +56,7 @@ if __name__=="__main__":
         sendMsg = 'I am a server.'
         sendMsgLen = utf8len(sendMsg)
 
-        connectionSock.send(sendMsgLen.encode('utf-8'))
-        print('메시지를 보냈습니다.')
+        connectionSock.send(str(sendMsgLen).encode('utf-8'))
+        print('메시지길이를  보냈습니다.')
+        connectionSock.send(sendMsg.encode('utf-8'))
+        print('메시지를  보냈습니다.')
