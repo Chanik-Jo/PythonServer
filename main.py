@@ -55,47 +55,49 @@ def newClientThread(connectionSock):
         # 소켓 끊기면 exception 뿜어내긴한다.  처리가 필요하다.
         # 근데 용케 프로그램이 끝ㅎ기진 않고 디스크립터도 정상적으로 잡힌다.
 
-        print(dataByteSize)
+        print("recv OK",dataByteSize)
         dataByteSize = dataByteSize.decode('utf-8')
         #dataByteSize = int(dataByteSize)
         if (dataByteSize.isdecimal()):#정상적으로 숫자가 돌아왔나????
             print("data size received", dataByteSize)
-            recvLoop = False
+
+        else:
+            continue
 
 
 
 
 
 
-    data = connectionSock.recv(int(dataByteSize)*10)#그냥 주면 클래스가 중간에 잘려서 와서 넉넉하게 *10배 주었다.  이 현상이 일어나는 원인은 잘 모르겠다.
-    print("print before Pickle data", data)
-    data = pickle.loads(bytes(data))#불러온 바이트값을 클래스로 다시 변환해주고 있다.  엄밀히 말하면 클래스로 변환해주는게 아니라 원래 클래스였던게 바이트로 변환되온걸 다시 클래스로 원상복구해준것이다.
-    print("print Pickled data", data)
-    #정상 작동여부 확인용.
+        data = connectionSock.recv(int(dataByteSize)*10)#그냥 주면 클래스가 중간에 잘려서 와서 넉넉하게 *10배 주었다.  이 현상이 일어나는 원인은 잘 모르겠다.
+        print("print before Pickle data", data)
+        data = pickle.loads(bytes(data))#불러온 바이트값을 클래스로 다시 변환해주고 있다.  엄밀히 말하면 클래스로 변환해주는게 아니라 원래 클래스였던게 바이트로 변환되온걸 다시 클래스로 원상복구해준것이다.
+        print("print Pickled data", data)
+        #정상 작동여부 확인용.
 
-    if(data.mode ==0):
-        for i in userList:
-            #if(i.isActive != False) and (connectionSock != i.fd): 첫번 째 조건은 비활성화(로그아웃이나 기타상황으로 비활성화 설정된 유저) 유저를 제외하는 조건이고 두번째는 자기 자신에게 메세지를 보내는것을 방지합니다.
-            if(i.isActive != False) :
-                print("send msg is ", data.message)
-                sendMsgToAnotherClient(data,i.fd)
-                #이경우(비활성화된 사용자가 아니다 + 내 자신이 아니다)
+        if(data.mode ==0):
+            for i in userList:
+                #if(i.isActive != False) and (connectionSock != i.fd): 첫번 째 조건은 비활성화(로그아웃이나 기타상황으로 비활성화 설정된 유저) 유저를 제외하는 조건이고 두번째는 자기 자신에게 메세지를 보내는것을 방지합니다.
+                if(i.isActive != False) :
+                    print("send msg is ", data.message)
+                    sendMsgToAnotherClient(data,i.fd)
+                    #이경우(비활성화된 사용자가 아니다 + 내 자신이 아니다)
 
-        '''
-        normal send Msg 0
-        nickname  1
-        log out 2            
-        '''
-    elif(data.mode==1):
-        for i in userList:
-            if(i.fd == connectionSock):
-                i.userNickName =data.nickname
-    elif(data.mode==2):
-        for i in userList:
-            if(i.fd==connectionSock):
-                i.isActive=False
-    else:
-        print("You got the msg error or wrong function options.")
+            '''
+            normal send Msg 0
+            nickname  1
+            log out 2            
+            '''
+        elif(data.mode==1):
+            for i in userList:
+                if(i.fd == connectionSock):
+                    i.userNickName =data.nickname
+        elif(data.mode==2):
+            for i in userList:
+                if(i.fd==connectionSock):
+                    i.isActive=False
+        else:
+            print("You got the msg error or wrong function options.")
 
 
 
@@ -108,7 +110,7 @@ def newClientThread(connectionSock):
 
 def sendMsgToAnotherClient(data,connectionSock):
     # 송신.
-    print("send msg is ",data.message)
+    print("sedMsg to Antoher Client method ",data.message)
 
 
     sendMsg = data
