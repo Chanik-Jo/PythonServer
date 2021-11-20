@@ -77,7 +77,6 @@ def newClientThread(connectionSock):
 
 
 
-
         data = connectionSock.recv(int(dataByteSize)*10)#그냥 주면 클래스가 중간에 잘려서 와서 넉넉하게 *10배 주었다.  이 현상이 일어나는 원인은 잘 모르겠다.
         print("print before Pickle data", data)
         data = pickle.loads(bytes(data))#불러온 바이트값을 클래스로 다시 변환해주고 있다.  엄밀히 말하면 클래스로 변환해주는게 아니라 원래 클래스였던게 바이트로 변환되온걸 다시 클래스로 원상복구해준것이다.
