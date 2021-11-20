@@ -55,6 +55,15 @@ def newClientThread(connectionSock):
         # 소켓 끊기면 exception 뿜어내긴한다.  처리가 필요하다.
         # 근데 용케 프로그램이 끝ㅎ기진 않고 디스크립터도 정상적으로 잡힌다.
 
+        if not data:#수신이 되지 않는 소켓은 비활성화된다. 이부분은 정상작동이 안될경우 생략하세요.
+            for i in userList:
+                if(i.fd==connectionSock):
+                    i.isActive=False
+                    print("recv가 되지 않는 클라이언트는 비활성화가 되었습니다.")
+
+
+
+
         print("recv OK",dataByteSize)
         dataByteSize = dataByteSize.decode('utf-8')
         #dataByteSize = int(dataByteSize)
@@ -116,8 +125,21 @@ def sendMsgToAnotherClient(data,connectionSock):
     sendMsg = data
     sendMsgLen = sys.getsizeof(sendMsg)#메세지 의 길이 여기서 메세지는 아마 메세지를 포함한 "socketMsg" 클래스이다.
 
-    connectionSock.send(str(sendMsgLen).encode('utf-8'))
-    print('메시지길이를  보냈습니다.')
+    #connectionSock.send(str(sendMsgLen).encode('utf-8'))
+    #print('메시지길이를  보냈습니다.')
+
+    try:#소켓의 비활성화 여부를 파악하기 위해 메세지가 안들어갈경우 연결이 끊어진것으로 판단합니다.
+        #안되면 이전의 위의 주석 2줄로 복구시키시면 됩니다.
+        connectionSock.send(str(sendMsgLen).encode('utf-8'))
+        print('메시지길이를  보냈습니다.')
+    except socket.error as e:
+        print("socket send failure socket may be disconnected ",e)
+        for i in userList:
+            if (i.fd == connectionSock):
+                i.isActive = False
+                print("send가 되지 않는 클라이언트는 비활성화가 되었습니다.")
+        return#함수를 종료합니다.
+
 
     connectionSock.send(pickle.dumps(sendMsg))#바이트로 변환하여 전송.
     #connectionSock.send(sendMsg.encode('utf-8'))
